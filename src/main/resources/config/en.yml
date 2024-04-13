@@ -36,6 +36,10 @@ ProxyPassword: "PASSWORD"
 # Run "/discord reload" after changing this option to apply
 Channels: {"global": "000000000000000000"}
 
+# Whether to kick the player if they are not in the following VC
+KickIfNotInVC: false
+DiscordVCChannel: "000000000000000000"
+
 # Console channel numerical ID (NOT NAME), leave blank to disable the console channel all together
 DiscordConsoleChannelId: "000000000000000000"
 

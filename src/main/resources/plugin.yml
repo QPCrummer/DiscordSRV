@@ -31,6 +31,7 @@ commands:
            /discord link - Link Minecraft account with Discord account
            /discord unlink - Remove link between Minecraft and Discord account
            /discord linked - Show information about linking status
+           /discord configure - Alter certain config values in-game
            /discord broadcast - Broadcast a message to Discord
            /discord debug - Send debug information to Gist
            /discord reload - Reload the plugin
@@ -56,6 +57,7 @@ permissions:
     children:
       discordsrv.player: true
       discordsrv.updatenotification: true
+      discordsrv.configure: true
       discordsrv.bcast: true
       discordsrv.reload: true
       discordsrv.debug: true
@@ -86,6 +88,9 @@ permissions:
     default: true
   discordsrv.updatenotification:
     description: whether the player should be told if there's an update to DiscordSRV when joining
+    default: op
+  discordsrv.configure:
+    description: whether to be able to alter the config in-game
     default: op
   discordsrv.bcast:
     description: whether the player is able to broadcast messages to the main text channel of DiscordSRV

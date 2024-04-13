@@ -55,7 +55,8 @@ public class CommandManager {
                 CommandLinked.class,
                 CommandReload.class,
                 CommandResync.class,
-                CommandUnlink.class
+                CommandUnlink.class,
+                CommandConfigure.class
         );
 
         for (Class<?> clazz : commandClasses) {

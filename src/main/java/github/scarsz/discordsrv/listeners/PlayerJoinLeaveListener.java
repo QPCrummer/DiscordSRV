@@ -20,11 +20,14 @@
 
 package github.scarsz.discordsrv.listeners;
 
+import github.scarsz.configuralize.Provider;
 import github.scarsz.discordsrv.Debug;
 import github.scarsz.discordsrv.DiscordSRV;
 import github.scarsz.discordsrv.objects.MessageFormat;
 import github.scarsz.discordsrv.objects.managers.GroupSynchronizationManager;
 import github.scarsz.discordsrv.util.*;
+import net.dv8tion.jda.api.entities.Member;
+import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -33,6 +36,8 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 
 public class PlayerJoinLeaveListener implements Listener {
 
@@ -43,6 +48,35 @@ public class PlayerJoinLeaveListener implements Listener {
     @EventHandler(priority = EventPriority.MONITOR)
     public void onPlayerJoin(PlayerJoinEvent event) {
         final Player player = event.getPlayer();
+
+        Provider configProvider = DiscordSRV.config().getProvider("config");
+        boolean shouldKick = configProvider.getConfig().getBoolean("KickIfNotInVC");
+
+        if (shouldKick) {
+            // See if the player is registered
+            final String discordId = DiscordSRV.getPlugin().getAccountLinkManager().getDiscordId(player.getUniqueId());
+            if (discordId == null) {
+                player.addPotionEffect(PotionEffectType.SLOW.createEffect(PotionEffect.INFINITE_DURATION, 255));
+                player.addPotionEffect(PotionEffectType.BLINDNESS.createEffect(PotionEffect.INFINITE_DURATION, 255));
+                player.setInvulnerable(true);
+                player.setInvisible(true);
+                player.sendMessage("Register your discord to continue!");
+            } else {
+                if (player.isInvulnerable()) {
+                    player.clearActivePotionEffects();
+                    player.setInvisible(false);
+                    player.setInvulnerable(false);
+                }
+            }
+
+            // Check if player is in the VC
+            Member member = DiscordUtil.getMemberById(discordId);
+            String channelID = configProvider.getConfig().getString("DiscordVCChannel");
+            if (!member.getVoiceState().inVoiceChannel() || !member.getVoiceState().getChannel().getId().equals(channelID)) {
+                player.kick(Component.text("You must be in the following VC: " + DiscordUtil.getJda().getVoiceChannelById(channelID).getName()));
+            }
+        }
+
 
         // if player is OP & update is available tell them
         if (GamePermissionUtil.hasPermission(player, "discordsrv.updatenotification") && DiscordSRV.updateIsAvailable) {
